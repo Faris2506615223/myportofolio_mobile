@@ -1,8 +1,9 @@
 import 'package:material_ui/material_ui.dart';
+import 'package:myportofolio_mobile/screens/experience_form.dart';
 import 'package:myportofolio_mobile/screens/menu.dart';
 import 'package:myportofolio_mobile/screens/project_form.dart';
 
-enum DrawerDestination { home, addProject }
+enum DrawerDestination { home, addProject, addExperience }
 
 /// Drawer mengganti route aktif; kartu Tambah Proyek memakai push secara terpisah.
 class LeftDrawer extends StatelessWidget {
@@ -80,6 +81,16 @@ class LeftDrawer extends StatelessWidget {
               context,
               DrawerDestination.addProject,
               (context) => ProjectFormPage(onToggleTheme: onToggleTheme),
+            ),
+          ),
+          ListTile(
+            leading: const Icon(Icons.work_outline_rounded),
+            title: const Text('Add Experience'),
+            selected: destination == DrawerDestination.addExperience,
+            onTap: () => _navigate(
+              context,
+              DrawerDestination.addExperience,
+              (context) => ExperienceFormPage(onToggleTheme: onToggleTheme),
             ),
           ),
         ],

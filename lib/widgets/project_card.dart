@@ -1,5 +1,6 @@
 import 'package:material_ui/material_ui.dart';
 import 'package:myportofolio_mobile/models/item_homepage.dart';
+import 'package:myportofolio_mobile/screens/experience_form.dart';
 import 'package:myportofolio_mobile/screens/project_form.dart';
 
 /// Kartu aksi mendukung sentuhan, fokus keyboard, tooltip, dan efek ripple.
@@ -32,13 +33,19 @@ class ItemCard extends StatelessWidget {
               );
 
             // push mempertahankan halaman menu untuk tombol Back.
-            if (item.name == 'Tambah Proyek') {
+            final destination = switch (item.action) {
+              HomepageAction.addProject => ProjectFormPage(
+                onToggleTheme: onToggleTheme,
+              ),
+              HomepageAction.addExperience => ExperienceFormPage(
+                onToggleTheme: onToggleTheme,
+              ),
+              HomepageAction.feedback => null,
+            };
+            if (destination != null) {
               Navigator.push<void>(
                 context,
-                MaterialPageRoute<void>(
-                  builder: (context) =>
-                      ProjectFormPage(onToggleTheme: onToggleTheme),
-                ),
+                MaterialPageRoute<void>(builder: (context) => destination),
               );
             }
           },

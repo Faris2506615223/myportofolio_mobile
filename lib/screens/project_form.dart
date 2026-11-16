@@ -1,5 +1,6 @@
 import 'package:material_ui/material_ui.dart';
 import 'package:myportofolio_mobile/widgets/left_drawer.dart';
+import 'package:myportofolio_mobile/widgets/portfolio_form_scaffold.dart';
 
 /// Form Tutorial 09: validasi dan pratinjau data tanpa penyimpanan permanen.
 class ProjectFormPage extends StatefulWidget {
@@ -93,175 +94,147 @@ class _ProjectFormPageState extends State<ProjectFormPage> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final isDark = theme.brightness == Brightness.dark;
-    final canGoBack = Navigator.of(context).canPop();
-
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Add Project Form'),
-        leading: canGoBack ? const BackButton() : null,
-        actions: [
-          if (canGoBack)
-            Builder(
-              builder: (scaffoldContext) => IconButton(
-                onPressed: () => Scaffold.of(scaffoldContext).openDrawer(),
-                tooltip: 'Buka menu navigasi',
-                icon: const Icon(Icons.menu),
-              ),
-            ),
-          if (widget.onToggleTheme != null)
-            IconButton(
-              onPressed: widget.onToggleTheme,
-              tooltip: isDark ? 'Aktifkan tema terang' : 'Aktifkan tema gelap',
-              icon: Icon(
-                isDark ? Icons.light_mode_rounded : Icons.dark_mode_rounded,
-              ),
-            ),
-        ],
-      ),
-      drawer: LeftDrawer(
-        destination: DrawerDestination.addProject,
-        onToggleTheme: widget.onToggleTheme,
-      ),
-      body: SafeArea(
-        child: Form(
-          key: _formKey,
-          child: SingleChildScrollView(
-            keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
-            child: Align(
-              alignment: Alignment.topCenter,
-              child: ConstrainedBox(
-                constraints: const BoxConstraints(maxWidth: 760),
-                child: Padding(
-                  padding: const EdgeInsets.all(16),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.all(8),
-                        child: Text(
-                          'Ceritakan karya barumu. Periksa isian melalui '
-                          'ringkasan sebelum melanjutkan. Data belum '
-                          'disimpan permanen.',
-                          style: theme.textTheme.bodyLarge,
-                        ),
+    return PortfolioFormScaffold(
+      title: 'Add Project Form',
+      destination: DrawerDestination.addProject,
+      onToggleTheme: widget.onToggleTheme,
+      child: Form(
+        key: _formKey,
+        child: SingleChildScrollView(
+          keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+          child: Align(
+            alignment: Alignment.topCenter,
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 760),
+              child: Padding(
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.all(8),
+                      child: Text(
+                        'Ceritakan karya barumu. Periksa isian melalui '
+                        'ringkasan sebelum melanjutkan. Data belum '
+                        'disimpan permanen.',
+                        style: theme.textTheme.bodyLarge,
                       ),
-                      Padding(
-                        padding: const EdgeInsets.all(8),
-                        child: TextFormField(
-                          key: const ValueKey('project-name'),
-                          decoration: const InputDecoration(
-                            labelText: 'Nama Proyek',
-                            hintText: 'Nama Proyek',
-                            errorMaxLines: 3,
-                            border: OutlineInputBorder(),
-                          ),
-                          textCapitalization: TextCapitalization.words,
-                          textInputAction: TextInputAction.next,
-                          onChanged: (value) => _projectName = value.trim(),
-                          validator: (value) =>
-                              value == null || value.trim().isEmpty
-                              ? 'Nama proyek tidak boleh kosong!'
-                              : null,
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.all(8),
+                      child: TextFormField(
+                        key: const ValueKey('project-name'),
+                        decoration: const InputDecoration(
+                          labelText: 'Nama Proyek',
+                          hintText: 'Nama Proyek',
+                          errorMaxLines: 3,
+                          border: OutlineInputBorder(),
                         ),
+                        textCapitalization: TextCapitalization.words,
+                        textInputAction: TextInputAction.next,
+                        onChanged: (value) => _projectName = value.trim(),
+                        validator: (value) =>
+                            value == null || value.trim().isEmpty
+                            ? 'Nama proyek tidak boleh kosong!'
+                            : null,
                       ),
-                      Padding(
-                        padding: const EdgeInsets.all(8),
-                        child: TextFormField(
-                          key: const ValueKey('project-description'),
-                          maxLines: 5,
-                          decoration: const InputDecoration(
-                            labelText: 'Deskripsi Proyek',
-                            hintText: 'Deskripsi Proyek',
-                            alignLabelWithHint: true,
-                            errorMaxLines: 3,
-                            border: OutlineInputBorder(),
-                          ),
-                          textCapitalization: TextCapitalization.sentences,
-                          onChanged: (value) => _description = value.trim(),
-                          validator: (value) =>
-                              value == null || value.trim().isEmpty
-                              ? 'Deskripsi proyek tidak boleh kosong!'
-                              : null,
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.all(8),
+                      child: TextFormField(
+                        key: const ValueKey('project-description'),
+                        maxLines: 5,
+                        decoration: const InputDecoration(
+                          labelText: 'Deskripsi Proyek',
+                          hintText: 'Deskripsi Proyek',
+                          alignLabelWithHint: true,
+                          errorMaxLines: 3,
+                          border: OutlineInputBorder(),
                         ),
+                        textCapitalization: TextCapitalization.sentences,
+                        onChanged: (value) => _description = value.trim(),
+                        validator: (value) =>
+                            value == null || value.trim().isEmpty
+                            ? 'Deskripsi proyek tidak boleh kosong!'
+                            : null,
                       ),
-                      Padding(
-                        padding: const EdgeInsets.all(8),
-                        child: DropdownButtonFormField<String>(
-                          key: const ValueKey('project-category'),
-                          // Nilai awal konstan membuat reset kembali ke default,
-                          // bukan ke kategori terakhir yang dipilih pengguna.
-                          initialValue: _defaultCategory,
-                          isExpanded: true,
-                          isDense: false,
-                          itemHeight: null,
-                          decoration: const InputDecoration(
-                            labelText: 'Kategori Proyek',
-                            border: OutlineInputBorder(),
-                          ),
-                          items: [
-                            for (final category in _categories)
-                              DropdownMenuItem(
-                                value: category,
-                                child: Text(category),
-                              ),
-                          ],
-                          onChanged: (value) {
-                            if (value == null) return;
-                            setState(() => _category = value);
-                          },
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.all(8),
+                      child: DropdownButtonFormField<String>(
+                        key: const ValueKey('project-category'),
+                        // Nilai awal konstan membuat reset kembali ke default,
+                        // bukan ke kategori terakhir yang dipilih pengguna.
+                        initialValue: _defaultCategory,
+                        isExpanded: true,
+                        isDense: false,
+                        itemHeight: null,
+                        decoration: const InputDecoration(
+                          labelText: 'Kategori Proyek',
+                          border: OutlineInputBorder(),
                         ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.all(8),
-                        child: TextFormField(
-                          key: const ValueKey('project-technologies'),
-                          decoration: const InputDecoration(
-                            labelText: 'Teknologi yang Digunakan',
-                            hintText: 'Contoh: Flutter, Django, Figma',
-                            helperText: 'Opsional',
-                            border: OutlineInputBorder(),
-                          ),
-                          textInputAction: TextInputAction.next,
-                          onChanged: (value) => _technologies = value.trim(),
-                        ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.all(8),
-                        child: TextFormField(
-                          key: const ValueKey('project-link'),
-                          decoration: const InputDecoration(
-                            labelText: 'Tautan Proyek',
-                            hintText: 'https://example.com',
-                            helperText: 'Opsional, gunakan HTTP atau HTTPS',
-                            helperMaxLines: 2,
-                            errorMaxLines: 3,
-                            border: OutlineInputBorder(),
-                          ),
-                          keyboardType: TextInputType.url,
-                          textInputAction: TextInputAction.done,
-                          autocorrect: false,
-                          onChanged: (value) => _projectLink = value.trim(),
-                          validator: _validateLink,
-                        ),
-                      ),
-                      Align(
-                        alignment: Alignment.bottomCenter,
-                        child: Padding(
-                          padding: const EdgeInsets.all(8),
-                          child: ElevatedButton(
-                            onPressed: _saveProject,
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: theme.colorScheme.primary,
-                              foregroundColor: theme.colorScheme.onPrimary,
-                              minimumSize: const Size(120, 48),
+                        items: [
+                          for (final category in _categories)
+                            DropdownMenuItem(
+                              value: category,
+                              child: Text(category),
                             ),
-                            child: const Text('Save'),
+                        ],
+                        onChanged: (value) {
+                          if (value == null) return;
+                          setState(() => _category = value);
+                        },
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.all(8),
+                      child: TextFormField(
+                        key: const ValueKey('project-technologies'),
+                        decoration: const InputDecoration(
+                          labelText: 'Teknologi yang Digunakan',
+                          hintText: 'Contoh: Flutter, Django, Figma',
+                          helperText: 'Opsional',
+                          border: OutlineInputBorder(),
+                        ),
+                        textInputAction: TextInputAction.next,
+                        onChanged: (value) => _technologies = value.trim(),
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.all(8),
+                      child: TextFormField(
+                        key: const ValueKey('project-link'),
+                        decoration: const InputDecoration(
+                          labelText: 'Tautan Proyek',
+                          hintText: 'https://example.com',
+                          helperText: 'Opsional, gunakan HTTP atau HTTPS',
+                          helperMaxLines: 2,
+                          errorMaxLines: 3,
+                          border: OutlineInputBorder(),
+                        ),
+                        keyboardType: TextInputType.url,
+                        textInputAction: TextInputAction.done,
+                        autocorrect: false,
+                        onChanged: (value) => _projectLink = value.trim(),
+                        validator: _validateLink,
+                      ),
+                    ),
+                    Align(
+                      alignment: Alignment.bottomCenter,
+                      child: Padding(
+                        padding: const EdgeInsets.all(8),
+                        child: ElevatedButton(
+                          onPressed: _saveProject,
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: theme.colorScheme.primary,
+                            foregroundColor: theme.colorScheme.onPrimary,
+                            minimumSize: const Size(120, 48),
                           ),
+                          child: const Text('Save'),
                         ),
                       ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
               ),
             ),

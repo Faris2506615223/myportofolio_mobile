@@ -19,6 +19,14 @@ abstract final class PortfolioData {
       icon: Icons.add_circle,
       color: Color(0xFF176B4F),
       description: 'Mulai langkah baru dengan ide berikutnya.',
+      action: HomepageAction.addProject,
+    ),
+    ItemHomepage(
+      name: 'Tambah Pengalaman',
+      icon: Icons.work_outline_rounded,
+      color: Color(0xFF6F3C91),
+      description: 'Catat peran dan kontribusi yang bermakna.',
+      action: HomepageAction.addExperience,
     ),
     ItemHomepage(
       name: 'Logout',

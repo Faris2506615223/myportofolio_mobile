@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:myportofolio_mobile/app.dart';
 import 'package:myportofolio_mobile/data/portfolio_data.dart';
+import 'package:myportofolio_mobile/screens/experience_form.dart';
 import 'package:myportofolio_mobile/screens/menu.dart';
 import 'package:myportofolio_mobile/screens/project_form.dart';
 import 'package:myportofolio_mobile/widgets/info_card.dart';
@@ -11,7 +12,7 @@ import 'package:myportofolio_mobile/widgets/project_card.dart';
 void main() {
   Future<void> pumpApp(WidgetTester tester) async {
     tester.view.devicePixelRatio = 1;
-    tester.view.physicalSize = const Size(1280, 900);
+    tester.view.physicalSize = const Size(1280, 1100);
     addTearDown(tester.view.resetDevicePixelRatio);
     addTearDown(tester.view.resetPhysicalSize);
     await tester.pumpWidget(const MyApp());
@@ -33,7 +34,7 @@ void main() {
     expect(find.text('PBP F'), findsOneWidget);
     expect(find.text('Burhan'), findsNothing);
     expect(find.text('2406000001'), findsNothing);
-    expect(find.byType(ItemCard), findsNWidgets(3));
+    expect(find.byType(ItemCard), findsNWidgets(4));
   });
 
   testWidgets('Setiap kartu aksi merender warna unik dari model', (
@@ -54,10 +55,10 @@ void main() {
       colors.add(material.color!);
     }
 
-    expect(colors, hasLength(3));
+    expect(colors, hasLength(4));
   });
 
-  testWidgets('Ketiga tombol menampilkan pesan SnackBar yang persis sesuai', (
+  testWidgets('Keempat tombol menampilkan pesan SnackBar yang persis sesuai', (
     tester,
   ) async {
     await pumpApp(tester);
@@ -73,6 +74,11 @@ void main() {
       expect(find.byType(SnackBar), findsOneWidget);
       if (item.name == 'Tambah Proyek') {
         expect(find.byType(ProjectFormPage), findsOneWidget);
+        await tester.pageBack();
+        await tester.pumpAndSettle();
+      }
+      if (item.name == 'Tambah Pengalaman') {
+        expect(find.byType(ExperienceFormPage), findsOneWidget);
         await tester.pageBack();
         await tester.pumpAndSettle();
       }

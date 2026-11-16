@@ -13,7 +13,9 @@ class ResponsiveCardWrap extends StatelessWidget {
       builder: (context, constraints) {
         const spacing = 16.0;
         final largeText = MediaQuery.textScalerOf(context).scale(14) > 20;
-        final columns = constraints.maxWidth >= 780 && !largeText ? 3 : 1;
+        final columns = constraints.maxWidth >= 780 && !largeText
+            ? (children.length == 4 ? 2 : 3)
+            : 1;
         final width =
             (constraints.maxWidth - spacing * (columns - 1)) / columns;
 
