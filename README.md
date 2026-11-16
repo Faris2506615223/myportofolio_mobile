@@ -122,22 +122,22 @@ Warna dibaca langsung dari `item.color`, sehingga tidak diperlukan percabangan b
 
 ### Field Form Proyek
 
-| Field | Widget | Aturan |
-| --- | --- | --- |
-| Nama Proyek | `TextFormField` | Wajib diisi; input yang hanya berisi spasi ditolak. |
-| Deskripsi Proyek | `TextFormField` dengan `maxLines: 5` | Wajib diisi; input kosong atau whitespace ditolak. |
-| Kategori Proyek | `DropdownButtonFormField<String>` | Pilihan: Web Development, Mobile Development, Machine Learning, Data Science, dan Other. Default Web Development. |
-| Teknologi yang Digunakan | `TextFormField` | Opsional, misalnya Flutter, Django, Figma. |
-| Tautan Proyek | `TextFormField` dengan keyboard URL | Opsional; jika diisi harus berupa URL HTTP/HTTPS dengan host yang valid dan tanpa whitespace. |
+| Field                    | Widget                                   | Aturan                                                                                                            |
+| ------------------------ | ---------------------------------------- | ----------------------------------------------------------------------------------------------------------------- |
+| Nama Proyek              | `TextFormField`                        | Wajib diisi; input yang hanya berisi spasi ditolak.                                                               |
+| Deskripsi Proyek         | `TextFormField` dengan `maxLines: 5` | Wajib diisi; input kosong atau whitespace ditolak.                                                                |
+| Kategori Proyek          | `DropdownButtonFormField<String>`      | Pilihan: Web Development, Mobile Development, Machine Learning, Data Science, dan Other. Default Web Development. |
+| Teknologi yang Digunakan | `TextFormField`                        | Opsional, misalnya Flutter, Django, Figma.                                                                        |
+| Tautan Proyek            | `TextFormField` dengan keyboard URL    | Opsional; jika diisi harus berupa URL HTTP/HTTPS dengan host yang valid dan tanpa whitespace.                     |
 
 ### Perbedaan Navigasi yang Diterapkan
 
-| Interaksi | Method | Perilaku |
-| --- | --- | --- |
-| Kartu Tambah Proyek | `Navigator.push` | Menambahkan formulir ke atas stack dan mempertahankan menu untuk kembali dengan Back. |
-| Drawer Home / Add Project | `Navigator.pushReplacement` | Mengganti route paling atas setelah drawer ditutup; tidak menghapus route lain di bawahnya. |
-| Tombol Back pada formulir | `Navigator.pop` melalui `BackButton` | Menghapus formulir yang dibuka dari kartu, lalu kembali ke menu yang sama. |
-| Tombol OK pada dialog | `Navigator.pop` | Menutup dialog; setelah dikonfirmasi, state dan field formulir direset. |
+| Interaksi                 | Method                                   | Perilaku                                                                                    |
+| ------------------------- | ---------------------------------------- | ------------------------------------------------------------------------------------------- |
+| Kartu Tambah Proyek       | `Navigator.push`                       | Menambahkan formulir ke atas stack dan mempertahankan menu untuk kembali dengan Back.       |
+| Drawer Home / Add Project | `Navigator.pushReplacement`            | Mengganti route paling atas setelah drawer ditutup; tidak menghapus route lain di bawahnya. |
+| Tombol Back pada formulir | `Navigator.pop` melalui `BackButton` | Menghapus formulir yang dibuka dari kartu, lalu kembali ke menu yang sama.                  |
+| Tombol OK pada dialog     | `Navigator.pop`                        | Menutup dialog; setelah dikonfirmasi, state dan field formulir direset.                     |
 
 `DropdownButtonFormField` memakai nilai awal yang tetap. Nilai kategori yang dipilih disimpan terpisah agar `FormState.reset()` benar-benar kembali ke default, termasuk pada submit kedua. Tinggi item dropdown dapat mengikuti teks. Judul dan isi dialog juga dapat digulir agar tetap dapat digunakan pada layar kecil dengan teks sistem yang diperbesar. Tidak ada penyimpanan database pada tahap tutorial ini.
 
@@ -188,13 +188,13 @@ flutter test --platform chrome test/navigation_form_test.dart --reporter expande
 
 Hasil verifikasi pada 16 November 2026:
 
-| Pemeriksaan                          | Hasil                                                                             |
-| ------------------------------------ | --------------------------------------------------------------------------------- |
-| Formatter Dart                       | Seluruh berkas `lib/` dan `test/` sudah sesuai format.                        |
-| `flutter analyze`                  | **No issues found!**                                                        |
-| `flutter test --reporter expanded` | **27 tes lulus.**                                                           |
-| `flutter build web --release`      | **Berhasil**, dengan output pada `build/web`. Wasm dry run juga berhasil. |
-| Tes navigasi/form pada Chrome | Belum selesai: suite tetap pada tahap `loading` setelah sekitar lima menit, lalu proses dihentikan. |
+| Pemeriksaan                          | Hasil                                                                                                 |
+| ------------------------------------ | ----------------------------------------------------------------------------------------------------- |
+| Formatter Dart                       | Seluruh berkas `lib/` dan `test/` sudah sesuai format.                                            |
+| `flutter analyze`                  | **No issues found!**                                                                            |
+| `flutter test --reporter expanded` | **27 tes lulus.**                                                                               |
+| `flutter build web --release`      | **Berhasil**, dengan output pada `build/web`. Wasm dry run juga berhasil.                     |
+| Tes navigasi/form pada Chrome        | Belum selesai: suite tetap pada tahap `loading` setelah sekitar lima menit, lalu proses dihentikan. |
 
 Cakupan tes meliputi identitas pemilik, menu stateless, warna kartu yang dirender, pesan ketiga tombol, penggantian pesan saat tap cepat, clipboard berhasil/gagal, tema sistem dan penggantian dua arah, serta buka/tutup dialog profil. Layout diuji pada ukuran 320 x 568, 390 x 844, 768 x 1024, 1024 x 600, dan 1440 x 900 logical pixels, ditambah teks 200% pada layar 320 x 568.
 
@@ -368,5 +368,3 @@ Jawaban Tugas 7 mendokumentasikan implementasi pada minggu tersebut. Refactoring
 Kutipan instruksi utama pada pengerjaan Tugas 7:
 
 1. *"Periksa kelengkapan Tugas 7 Flutter di workspace VS Code berdasarkan tugas-7.pdf. Verifikasi kelanjutan Tutorial 08, pemisahan lib/menu.dart dari main.dart, MyHomePage sebagai StatelessWidget, serta tiga InfoCard berisi NPM, nama lengkap, dan kelas. Uji minimal tiga ItemCard untuk melihat portofolio, menambah item, dan logout beserta ikon, warna kontras, dan SnackBar sesuai nama tombol. Jalankan flutter analyze. Periksa README.md, termasuk enam jawaban reflektif, petunjuk setup, dan pengungkapan penggunaan AI. Untuk setiap syarat, tuliskan status, bukti berupa lokasi kode atau hasil pengujian, serta perbaikan yang diperlukan tanpa mengubah berkas."*
-
-**Tutorial 09:** Permintaan berikutnya adalah melanjutkan hasil merge Tugas 7 dengan seluruh implementasi `tutorial-9.pdf`, tanpa melakukan commit, kemudian memberikan perintah `git add` dan `git commit` untuk dijalankan pengguna.
