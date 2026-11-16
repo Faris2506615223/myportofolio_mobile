@@ -1,156 +1,188 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:myportofolio_mobile/data/portfolio_data.dart';
+import 'package:myportofolio_mobile/widgets/info_card.dart';
+import 'package:myportofolio_mobile/widgets/item_card.dart';
+import 'package:myportofolio_mobile/widgets/responsive_card_wrap.dart';
 
+/// Halaman utama hanya merender konfigurasi; state tema dikelola oleh MyApp.
 class MyHomePage extends StatelessWidget {
-  MyHomePage({super.key});
+  final VoidCallback? onToggleTheme;
 
-  final String npm = "2406000001";
-  final String nama = "Burhan";
-  final String kelas = "PBP A";
+  const MyHomePage({super.key, this.onToggleTheme});
 
-  final List<ItemHomepage> items = [
-    ItemHomepage("Lihat Proyek", Icons.folder),
-    ItemHomepage("Tambah Proyek", Icons.add_circle),
-    ItemHomepage("Logout", Icons.logout),
-  ];
+  Future<void> _copyNpm(BuildContext context) async {
+    try {
+      await Clipboard.setData(const ClipboardData(text: PortfolioData.npm));
+      if (!context.mounted) return;
+      ScaffoldMessenger.of(context)
+        ..clearSnackBars()
+        ..showSnackBar(const SnackBar(content: Text('NPM berhasil disalin.')));
+    } on PlatformException {
+      if (!context.mounted) return;
+      ScaffoldMessenger.of(context)
+        ..clearSnackBars()
+        ..showSnackBar(
+          const SnackBar(content: Text('NPM belum dapat disalin. Coba lagi.')),
+        );
+    }
+  }
+
+  void _showProfile(BuildContext context) {
+    showDialog<void>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: const Text('Tentang portofolio'),
+        content: const SingleChildScrollView(
+          child: Text(
+            '${PortfolioData.name}\n'
+            '${PortfolioData.npm} · ${PortfolioData.className}\n\n'
+            'Mahasiswa Fakultas Ilmu Komputer, Universitas Indonesia. '
+            'Portofolio ini menjadi ruang untuk mencatat karya dan '
+            'perjalanan belajar pengembangan aplikasi.',
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(dialogContext).pop(),
+            child: const Text('Tutup'),
+          ),
+        ],
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
-    // Scaffold menyediakan struktur visual dasar halaman (AppBar, Body, SnackBar).
+    final theme = Theme.of(context);
+    final colors = theme.colorScheme;
+    final isDark = theme.brightness == Brightness.dark;
+
     return Scaffold(
-      // AppBar menampilkan bar bagian atas halaman aplikasi.
       appBar: AppBar(
         title: const Text(
           'MyPortfolio',
-          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+          style: TextStyle(fontWeight: FontWeight.w800),
         ),
-        backgroundColor: Theme.of(context).colorScheme.primary,
-      ),
-      // Body halaman utama dengan padding di sekelilingnya.
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            // Baris horizontal untuk menampilkan 3 InfoCard secara sejajar.
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                InfoCard(title: 'NPM', content: npm),
-                InfoCard(title: 'Name', content: nama),
-                InfoCard(title: 'Class', content: kelas),
-              ],
+        actions: [
+          if (onToggleTheme != null)
+            IconButton(
+              onPressed: onToggleTheme,
+              tooltip: isDark ? 'Aktifkan tema terang' : 'Aktifkan tema gelap',
+              icon: Icon(
+                isDark ? Icons.light_mode_rounded : Icons.dark_mode_rounded,
+              ),
             ),
-            const SizedBox(height: 16.0),
-            // Bagian tengah: pesan sambutan dan kisi tombol menu portofolio.
-            Center(
-              child: Column(
-                children: [
-                  const Padding(
-                    padding: EdgeInsets.only(top: 16.0),
-                    child: Text(
-                      'Selamat datang di MyPortfolio Mobile!',
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 18.0,
+          IconButton(
+            onPressed: () => _showProfile(context),
+            tooltip: 'Tentang portofolio',
+            icon: const Icon(Icons.info_outline_rounded),
+          ),
+          const SizedBox(width: 8),
+        ],
+      ),
+      body: SafeArea(
+        child: SingleChildScrollView(
+          child: Align(
+            alignment: Alignment.topCenter,
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 1120),
+              child: Padding(
+                padding: const EdgeInsets.all(24),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    ResponsiveCardWrap(
+                      children: [
+                        InfoCard(
+                          title: 'NPM',
+                          content: PortfolioData.npm,
+                          icon: Icons.badge_outlined,
+                          onCopy: () => _copyNpm(context),
+                        ),
+                        const InfoCard(
+                          title: 'Name',
+                          content: PortfolioData.name,
+                          icon: Icons.person_outline_rounded,
+                        ),
+                        const InfoCard(
+                          title: 'Class',
+                          content: PortfolioData.className,
+                          icon: Icons.school_outlined,
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 24),
+                    Container(
+                      width: double.infinity,
+                      padding: const EdgeInsets.all(28),
+                      decoration: BoxDecoration(
+                        color: colors.primaryContainer,
+                        borderRadius: BorderRadius.circular(24),
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'PORTOFOLIO / FARIS',
+                            style: theme.textTheme.labelMedium?.copyWith(
+                              color: colors.onPrimaryContainer,
+                              letterSpacing: 2,
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
+                          const SizedBox(height: 16),
+                          Text(
+                            'Selamat datang di MyPortfolio Mobile!',
+                            style: theme.textTheme.headlineMedium?.copyWith(
+                              color: colors.onPrimaryContainer,
+                              fontWeight: FontWeight.w800,
+                              height: 1.2,
+                            ),
+                          ),
+                          const SizedBox(height: 12),
+                          Text(
+                            'Halo, aku Faris. Setiap karya adalah bagian '
+                            'dari perjalanan belajar. Mari tumbuh lewat '
+                            'ide dan pengalaman baru.',
+                            style: theme.textTheme.bodyLarge?.copyWith(
+                              color: colors.onPrimaryContainer,
+                              height: 1.6,
+                            ),
+                          ),
+                        ],
                       ),
                     ),
-                  ),
-                  // GridView menampilkan kartu tombol dalam tata letak kisi 3 kolom.
-                  GridView.count(
-                    primary: true,
-                    padding: const EdgeInsets.all(20),
-                    crossAxisSpacing: 10,
-                    mainAxisSpacing: 10,
-                    crossAxisCount: 3,
-                    // shrinkWrap agar ukuran kisi menyesuaikan tinggi konten anak.
-                    shrinkWrap: true,
-                    children: items.map((ItemHomepage item) {
-                      return ItemCard(item);
-                    }).toList(),
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class InfoCard extends StatelessWidget {
-  // Kartu informasi yang menampilkan judul (title) dan isi (content).
-  final String title;
-  final String content;
-
-  const InfoCard({super.key, required this.title, required this.content});
-
-  @override
-  Widget build(BuildContext context) {
-    return Card(
-      // Memberikan efek bayangan kartu elevasi 2 unit.
-      elevation: 2.0,
-      child: Container(
-        // Menyesuaikan lebar kartu dengan proporsi layar (dibagi 3.5).
-        width: MediaQuery.of(context).size.width / 3.5,
-        padding: const EdgeInsets.all(16.0),
-        // Menyusun teks title dan content secara vertikal.
-        child: Column(
-          children: [
-            Text(title, style: const TextStyle(fontWeight: FontWeight.bold)),
-            const SizedBox(height: 8.0),
-            Text(content),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class ItemHomepage {
-  final String name;
-  final IconData icon;
-
-  ItemHomepage(this.name, this.icon);
-}
-
-class ItemCard extends StatelessWidget {
-  final ItemHomepage item;
-
-  const ItemCard(this.item, {super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Material(
-      // Menggunakan warna sekunder dari skema tema aplikasi.
-      color: Theme.of(context).colorScheme.secondary,
-      borderRadius: BorderRadius.circular(12),
-      child: InkWell(
-        // Aksi ketika kartu ditekan oleh pengguna.
-        onTap: () {
-          // Menampilkan SnackBar dengan pesan interaktif.
-          ScaffoldMessenger.of(context)
-            ..hideCurrentSnackBar()
-            ..showSnackBar(
-              SnackBar(
-                content: Text("Kamu telah menekan tombol ${item.name}!"),
-              ),
-            );
-        },
-        child: Container(
-          padding: const EdgeInsets.all(8),
-          child: Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(item.icon, color: Colors.white, size: 30.0),
-                const Padding(padding: EdgeInsets.all(3)),
-                Text(
-                  item.name,
-                  textAlign: TextAlign.center,
-                  style: const TextStyle(color: Colors.white),
+                    const SizedBox(height: 32),
+                    Text(
+                      'Ruang karyaku',
+                      style: theme.textTheme.titleLarge?.copyWith(
+                        fontWeight: FontWeight.w800,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      'Langkah kecil untuk cerita yang lebih besar.',
+                      style: theme.textTheme.bodyMedium?.copyWith(
+                        color: colors.onSurfaceVariant,
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+                    ResponsiveCardWrap(
+                      children: [
+                        for (final item in PortfolioData.items) ItemCard(item),
+                      ],
+                    ),
+                    const SizedBox(height: 32),
+                    Text(
+                      '${PortfolioData.name} · Universitas Indonesia',
+                      style: theme.textTheme.bodySmall?.copyWith(
+                        color: colors.onSurfaceVariant,
+                      ),
+                    ),
+                  ],
                 ),
-              ],
+              ),
             ),
           ),
         ),
