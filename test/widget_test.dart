@@ -1,11 +1,12 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:myportofolio_mobile/app.dart';
 import 'package:myportofolio_mobile/data/portfolio_data.dart';
-import 'package:myportofolio_mobile/menu.dart';
+import 'package:myportofolio_mobile/screens/menu.dart';
+import 'package:myportofolio_mobile/screens/project_form.dart';
 import 'package:myportofolio_mobile/widgets/info_card.dart';
-import 'package:myportofolio_mobile/widgets/item_card.dart';
+import 'package:myportofolio_mobile/widgets/project_card.dart';
 
 void main() {
   Future<void> pumpApp(WidgetTester tester) async {
@@ -70,6 +71,11 @@ void main() {
         findsOneWidget,
       );
       expect(find.byType(SnackBar), findsOneWidget);
+      if (item.name == 'Tambah Proyek') {
+        expect(find.byType(ProjectFormPage), findsOneWidget);
+        await tester.pageBack();
+        await tester.pumpAndSettle();
+      }
     }
   });
 
@@ -78,8 +84,8 @@ void main() {
   ) async {
     await pumpApp(tester);
 
-    for (final item in PortfolioData.items) {
-      await tester.tap(find.text(item.name));
+    for (final name in ['Lihat Proyek', 'Logout', 'Lihat Proyek', 'Logout']) {
+      await tester.tap(find.text(name));
       await tester.pump(const Duration(milliseconds: 50));
     }
     await tester.pumpAndSettle();

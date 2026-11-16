@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 /// Menghitung lebar dari ruang induk, bukan dari lebar layar keseluruhan.
 /// Teks yang diperbesar memakai satu kolom agar konten tetap terbaca utuh.

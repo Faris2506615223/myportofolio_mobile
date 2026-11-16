@@ -1,11 +1,13 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:myportofolio_mobile/models/item_homepage.dart';
+import 'package:myportofolio_mobile/screens/project_form.dart';
 
 /// Kartu aksi mendukung sentuhan, fokus keyboard, tooltip, dan efek ripple.
 class ItemCard extends StatelessWidget {
   final ItemHomepage item;
+  final VoidCallback? onToggleTheme;
 
-  const ItemCard(this.item, {super.key});
+  const ItemCard(this.item, {super.key, this.onToggleTheme});
 
   @override
   Widget build(BuildContext context) {
@@ -28,6 +30,17 @@ class ItemCard extends StatelessWidget {
                   content: Text('Kamu telah menekan tombol ${item.name}!'),
                 ),
               );
+
+            // push mempertahankan halaman menu untuk tombol Back.
+            if (item.name == 'Tambah Proyek') {
+              Navigator.push<void>(
+                context,
+                MaterialPageRoute<void>(
+                  builder: (context) =>
+                      ProjectFormPage(onToggleTheme: onToggleTheme),
+                ),
+              );
+            }
           },
           child: Padding(
             padding: const EdgeInsets.all(24),

@@ -1,8 +1,9 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter/services.dart';
 import 'package:myportofolio_mobile/data/portfolio_data.dart';
 import 'package:myportofolio_mobile/widgets/info_card.dart';
-import 'package:myportofolio_mobile/widgets/item_card.dart';
+import 'package:myportofolio_mobile/widgets/left_drawer.dart';
+import 'package:myportofolio_mobile/widgets/project_card.dart';
 import 'package:myportofolio_mobile/widgets/responsive_card_wrap.dart';
 
 /// Halaman utama hanya merender konfigurasi; state tema dikelola oleh MyApp.
@@ -81,6 +82,7 @@ class MyHomePage extends StatelessWidget {
           const SizedBox(width: 8),
         ],
       ),
+      drawer: LeftDrawer(onToggleTheme: onToggleTheme),
       body: SafeArea(
         child: SingleChildScrollView(
           child: Align(
@@ -170,7 +172,8 @@ class MyHomePage extends StatelessWidget {
                     const SizedBox(height: 20),
                     ResponsiveCardWrap(
                       children: [
-                        for (final item in PortfolioData.items) ItemCard(item),
+                        for (final item in PortfolioData.items)
+                          ItemCard(item, onToggleTheme: onToggleTheme),
                       ],
                     ),
                     const SizedBox(height: 32),

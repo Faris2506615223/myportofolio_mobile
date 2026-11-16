@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 /// Kartu profil yang dapat digunakan ulang, dengan aksi opsional salin NPM.
 class InfoCard extends StatelessWidget {
