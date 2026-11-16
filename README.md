@@ -95,13 +95,13 @@ Warna dibaca langsung dari `item.color`, sehingga tidak diperlukan percabangan b
 
 ### Fitur Tambahan
 
-| Fitur             | Implementasi                                                                                                                                                                              |
-| ----------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Fitur             | Implementasi                                                                                                                                                                                    |
+| ----------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Layout adaptif    | Tiga kolom identitas dan dua kolom untuk empat aksi pada area minimal 780 logical pixels; satu kolom pada area lebih sempit atau teks besar. Lebar halaman dibatasi hingga 1120 logical pixels. |
-| Tema terang/gelap | Menggunakan `theme`, `darkTheme`, dan `themeMode` pada `MaterialApp`, dengan kontrol pada AppBar. Pilihan berlaku selama sesi aplikasi.                                           |
-| Salin NPM         | Tombol salin pada kartu NPM menggunakan `Clipboard.setData` dan menampilkan SnackBar berhasil/gagal.                                                                                    |
-| Dialog profil     | `AlertDialog` berisi identitas dan ringkasan portofolio, dengan tombol Tutup.                                                                                                           |
-| Interaksi kartu   | Ripple dan fokus keyboard melalui `InkWell`, serta deskripsi melalui `Tooltip`.                                                                                                       |
+| Tema terang/gelap | Menggunakan `theme`, `darkTheme`, dan `themeMode` pada `MaterialApp`, dengan kontrol pada AppBar. Pilihan berlaku selama sesi aplikasi.                                                 |
+| Salin NPM         | Tombol salin pada kartu NPM menggunakan `Clipboard.setData` dan menampilkan SnackBar berhasil/gagal.                                                                                          |
+| Dialog profil     | `AlertDialog` berisi identitas dan ringkasan portofolio, dengan tombol Tutup.                                                                                                                 |
+| Interaksi kartu   | Ripple dan fokus keyboard melalui `InkWell`, serta deskripsi melalui `Tooltip`.                                                                                                             |
 
 ---
 
@@ -162,12 +162,12 @@ Bagian yang dipilih adalah **Pengalaman (Experience)**. Field mengikuti `Experie
 
 ### Pemetaan Field Experience
 
-| Field Model | Label dan Jenis Input | Aturan |
-| --- | --- | --- |
-| `title` | Posisi / Kegiatan, `TextFormField` | Wajib, teks biasa, trim whitespace, maksimal 255 Unicode code point sesuai `CharField(max_length=255)`. |
-| `description` | Deskripsi Pengalaman, `TextFormField` multiline | Wajib dan teks biasa; tanpa batas panjang tambahan karena model memakai `TextField`. |
-| `category` | Kategori, `DropdownButtonFormField<ExperienceCategory>` | Internship (`internship`), Research (`research`), Volunteer (`volunteer`), Part-Time (`part-time`), Full-Time (`full-time`), dan Freelance (`freelance`). Default Full-Time. |
-| `thumbnail` | URL Thumbnail, `TextFormField` dengan keyboard URL | Opsional; jika diisi maksimal 200 karakter, skema HTTP/HTTPS, host tidak kosong, dan tidak mengandung whitespace. |
+| Field Model     | Label dan Jenis Input                                     | Aturan                                                                                                                                                                                   |
+| --------------- | --------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `title`       | Posisi / Kegiatan, `TextFormField`                      | Wajib, teks biasa, trim whitespace, maksimal 255 Unicode code point sesuai `CharField(max_length=255)`.                                                                                |
+| `description` | Deskripsi Pengalaman, `TextFormField` multiline         | Wajib dan teks biasa; tanpa batas panjang tambahan karena model memakai `TextField`.                                                                                                   |
+| `category`    | Kategori, `DropdownButtonFormField<ExperienceCategory>` | Internship (`internship`), Research (`research`), Volunteer (`volunteer`), Part-Time (`part-time`), Full-Time (`full-time`), dan Freelance (`freelance`). Default Full-Time. |
+| `thumbnail`   | URL Thumbnail, `TextFormField` dengan keyboard URL      | Opsional; jika diisi maksimal 200 karakter, skema HTTP/HTTPS, host tidak kosong, dan tidak mengandung whitespace.                                                                        |
 
 Batas 200 karakter thumbnail mengikuti nilai bawaan [Django URLField](https://docs.djangoproject.com/en/5.2/ref/models/fields/#urlfield). Teks dengan tag HTML ditolak agar pengguna memasukkan teks biasa, sedangkan formulir web membersihkan tag sebelum validasi. Pemeriksaan ini bukan sanitizer HTML; ringkasan Flutter menggunakan widget `Text`.
 
@@ -183,12 +183,12 @@ Batas 200 karakter thumbnail mengikuti nilai bawaan [Django URLField](https://do
 
 ### Pemenuhan Rubrik
 
-| Aspek | Bukti |
-| --- | --- |
+| Aspek                    | Bukti                                                                                                                                                                                    |
+| ------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Fungsionalitas dan topik | Form baru, empat input sesuai model, validator per field, kartu/drawer, dialog lengkap, dan alur Home/Back. Bonus: isi contoh, reset, counter, serta adaptasi layar/keyboard/teks besar. |
-| Kualitas kode | Model immutable dan enum kategori, validator terpisah, tujuan kartu bertipe, kerangka form reusable, disposal controller, docstring alasan desain, dan analyzer bersih. |
-| Dokumentasi dan AI | Setup yang sama, progres mingguan, kontrak field, alur penggunaan, empat jawaban reflektif, log instruksi, serta analisis keterbatasan dan koreksi. |
-| Git dan pengumpulan | Perintah branch/staging/commit diberikan terpisah untuk dijalankan pemilik. Tidak ada commit atau push yang dijalankan pada pengerjaan ini. |
+| Kualitas kode            | Model immutable dan enum kategori, validator terpisah, tujuan kartu bertipe, kerangka form reusable, disposal controller, docstring alasan desain, dan analyzer bersih.                  |
+| Dokumentasi dan AI       | Setup yang sama, progres mingguan, kontrak field, alur penggunaan, empat jawaban reflektif, log instruksi, serta analisis keterbatasan dan koreksi.                                      |
+| Git dan pengumpulan      | Perintah branch/staging/commit diberikan terpisah untuk dijalankan pemilik. Tidak ada commit atau push yang dijalankan pada pengerjaan ini.                                              |
 
 Tutorial 09 merupakan prasyarat dengan tenggat **18 November 2026 pukul 23.59 WIB**. Tugas 8 dikumpulkan sebagai tautan commit GitHub melalui SCELE paling lambat **23 November 2026 pukul 23.59 WIB**. Status pengumpulan dan nilai akhir ditentukan oleh pelaksanaan pengumpulan serta penilai.
 
@@ -390,19 +390,16 @@ Jawaban Tugas 7 mendokumentasikan implementasi pada minggu tersebut. Refactoring
    Kartu Tambah Pengalaman pada `project_card.dart` memilih `ExperienceFormPage` melalui `HomepageAction.addExperience`, kemudian membuka `MaterialPageRoute` menggunakan `Navigator.push()`. Jika stack semula `[Home]`, hasilnya menjadi `[Home, ExperienceForm]`; Back menghapus form sehingga menu yang sama tampil kembali.
 
    `LeftDrawer` menutup drawer terlebih dahulu dengan `pop()` terhadap local history drawer, lalu memakai `pushReplacement()` untuk Home atau formulir tujuan. Opsi Home membangun `MyHomePage` dengan callback tema yang sama. Home dapat dipilih ketika menjalankan aplikasi di Chrome tanpa mengandalkan tombol Back browser. Mengganti route tersebut tidak berarti mengosongkan seluruh stack. Jika opsi yang dipilih sudah aktif, drawer cukup ditutup agar draf tidak hilang.
-
 2. **Bagaimana `Scaffold`, `AppBar`, dan `Drawer` menjaga konsistensi halaman? Berikan contoh penggunaan warna tema pada lebih dari satu halaman.**
 
    `Scaffold` menyediakan kerangka halaman, termasuk body, area AppBar, drawer, dan penyesuaian ruang saat keyboard muncul. `AppBar` memberi judul serta akses navigasi dan tema. `LeftDrawer` yang sama dipasang pada halaman utama, form Proyek, dan form Pengalaman, sehingga Home, Add Project, dan Add Experience selalu tersedia.
 
    Kedua formulir menggunakan `PortfolioFormScaffold` untuk menghindari duplikasi AppBar, BackButton, tombol pembuka drawer, kontrol tema, dan SafeArea. Semua halaman memperoleh `ThemeData` dari `MaterialApp`. Contohnya, header drawer dan tombol Save pada form Proyek maupun Simpan pada form Pengalaman membaca `Theme.of(context).colorScheme.primary`; warna teks tombol memakai `onPrimary`. Dengan begitu, pergantian tema terang/gelap memperbarui warna pada kedua halaman secara konsisten, bukan hanya pada halaman awal.
-
 3. **Mengapa layout formulir tersebut dipilih? Apa peran widget pengatur jarak dan penggulir ketika ruang layar terbatas?**
 
    Form memakai satu `Column` karena urutan input mudah diikuti: posisi, deskripsi, kategori, lalu URL thumbnail. `ConstrainedBox(maxWidth: 760)` menjaga field tidak terlalu lebar pada desktop, sementara `Align` memusatkan area form. `Padding` memberi ruang dari tepi layar, dan `SizedBox` memisahkan field agar label, helper, counter, serta pesan error tidak berdesakan.
 
    `SingleChildScrollView` membuat seluruh input dan tombol Simpan tetap dapat dijangkau ketika viewport pendek, perangkat landscape, atau keyboard mengambil ruang. `Scaffold` menyesuaikan body terhadap keyboard, dan pengguna juga dapat menutup keyboard dengan drag. Tombol Simpan/Reset disusun memakai `Wrap`, sehingga turun ke baris berikutnya ketika tidak cukup lebar. `SafeArea` menghindari area sistem. Dialog memakai `scrollable: true` dan konten yang dapat digulir agar judul atau deskripsi panjang tidak meluap pada teks 200%. Layout diuji dengan ukuran ponsel, landscape, teks besar, dan simulasi inset keyboard.
-
 4. **Apa peran `GlobalKey<FormState>`, `validator`, dan `validate()` saat Simpan ditekan? Mengapa jenis input atau keyboard saja belum cukup?**
 
    `GlobalKey<FormState>` disimpan sekali pada objek `State` untuk mengakses state Form yang sama ketika tombol Simpan ditekan. Setiap field mempunyai validator yang mengembalikan pesan error jika input tidak sah, atau `null` jika valid. `_formKey.currentState!.validate()` menjalankan validator dan menampilkan pesan pada field terkait. Jika hasilnya `false`, proses berhenti sebelum dialog dibuka; jika `true`, controller dibaca dan di-trim untuk membentuk snapshot `Experience` yang ditampilkan melalui `showDialog()`.
@@ -466,8 +463,3 @@ Jawaban Tugas 7 mendokumentasikan implementasi pada minggu tersebut. Refactoring
 Kutipan instruksi utama pada pengerjaan Tugas 7:
 
 1. *"Periksa kelengkapan Tugas 7 Flutter di workspace VS Code berdasarkan tugas-7.pdf. Verifikasi kelanjutan Tutorial 08, pemisahan lib/menu.dart dari main.dart, MyHomePage sebagai StatelessWidget, serta tiga InfoCard berisi NPM, nama lengkap, dan kelas. Uji minimal tiga ItemCard untuk melihat portofolio, menambah item, dan logout beserta ikon, warna kontras, dan SnackBar sesuai nama tombol. Jalankan flutter analyze. Periksa README.md, termasuk enam jawaban reflektif, petunjuk setup, dan pengungkapan penggunaan AI. Untuk setiap syarat, tuliskan status, bukti berupa lokasi kode atau hasil pengujian, serta perbaikan yang diperlukan tanpa mengubah berkas."*
-
-
-**Log permintaan Tugas 8 (ringkasan):** Terapkan `tugas-8.pdf` pada proyek mobile, kerjakan kode dan jawaban reflektif sesuai rubrik, lanjutkan AI disclosure tanpa mengubah keterangan model, jangan melakukan commit, lalu berikan teks perintah `git switch -c`, `git add`, dan `git commit`.
-
-Kutipan batasan pengguna: *"Jangan melakukan commit apapun."* dan *"lanjutkan ai disclosure tanpa mengubah keterangan model"*.
