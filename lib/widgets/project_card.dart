@@ -2,6 +2,10 @@ import 'package:material_ui/material_ui.dart';
 import 'package:myportofolio_mobile/models/item_homepage.dart';
 import 'package:myportofolio_mobile/screens/experience_form.dart';
 import 'package:myportofolio_mobile/screens/project_form.dart';
+import 'package:myportofolio_mobile/screens/project_list_screen.dart';
+import 'package:myportofolio_mobile/services/auth_state.dart';
+import 'package:myportofolio_mobile/widgets/auth_guard.dart';
+import 'package:provider/provider.dart';
 
 /// Kartu aksi mendukung sentuhan, fokus keyboard, tooltip, dan efek ripple.
 class ItemCard extends StatelessWidget {
@@ -9,6 +13,70 @@ class ItemCard extends StatelessWidget {
   final VoidCallback? onToggleTheme;
 
   const ItemCard(this.item, {super.key, this.onToggleTheme});
+
+  Future<void> _handleTap(BuildContext context) async {
+    final messenger = ScaffoldMessenger.of(context);
+    final navigator = Navigator.of(context);
+
+    switch (item.action) {
+      case HomepageAction.viewProjects:
+        messenger
+          ..clearSnackBars()
+          ..showSnackBar(
+            SnackBar(content: Text('Kamu telah menekan tombol ${item.name}!')),
+          );
+        await navigator.push<void>(
+          MaterialPageRoute<void>(
+            builder: (_) => ProjectListScreen(onToggleTheme: onToggleTheme),
+          ),
+        );
+      case HomepageAction.addProject:
+        messenger
+          ..clearSnackBars()
+          ..showSnackBar(
+            SnackBar(content: Text('Kamu telah menekan tombol ${item.name}!')),
+          );
+        final loggedIn = await ensureLoggedIn(context);
+        if (!loggedIn || !context.mounted) return;
+        await navigator.push<void>(
+          MaterialPageRoute<void>(
+            builder: (_) => ProjectFormPage(onToggleTheme: onToggleTheme),
+          ),
+        );
+      case HomepageAction.addExperience:
+        messenger
+          ..clearSnackBars()
+          ..showSnackBar(
+            SnackBar(content: Text('Kamu telah menekan tombol ${item.name}!')),
+          );
+        await navigator.push<void>(
+          MaterialPageRoute<void>(
+            builder: (_) => ExperienceFormPage(onToggleTheme: onToggleTheme),
+          ),
+        );
+      case HomepageAction.logout:
+        final authState = context.read<AuthState>();
+        if (authState.isLoggedIn) {
+          await authState.logout();
+          if (!context.mounted) return;
+          messenger
+            ..clearSnackBars()
+            ..showSnackBar(
+              const SnackBar(content: Text('Kamu telah berhasil logout!')),
+            );
+        } else {
+          messenger
+            ..clearSnackBars()
+            ..showSnackBar(const SnackBar(content: Text('Kamu belum login.')));
+        }
+      case HomepageAction.feedback:
+        messenger
+          ..clearSnackBars()
+          ..showSnackBar(
+            SnackBar(content: Text('Kamu telah menekan tombol ${item.name}!')),
+          );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -22,33 +90,7 @@ class ItemCard extends StatelessWidget {
         clipBehavior: Clip.antiAlias,
         child: InkWell(
           borderRadius: borderRadius,
-          onTap: () {
-            // Menghapus antrean mencegah pesan lama tampil setelah tap cepat.
-            ScaffoldMessenger.of(context)
-              ..clearSnackBars()
-              ..showSnackBar(
-                SnackBar(
-                  content: Text('Kamu telah menekan tombol ${item.name}!'),
-                ),
-              );
-
-            // push mempertahankan halaman menu untuk tombol Back.
-            final destination = switch (item.action) {
-              HomepageAction.addProject => ProjectFormPage(
-                onToggleTheme: onToggleTheme,
-              ),
-              HomepageAction.addExperience => ExperienceFormPage(
-                onToggleTheme: onToggleTheme,
-              ),
-              HomepageAction.feedback => null,
-            };
-            if (destination != null) {
-              Navigator.push<void>(
-                context,
-                MaterialPageRoute<void>(builder: (context) => destination),
-              );
-            }
-          },
+          onTap: () => _handleTap(context),
           child: Padding(
             padding: const EdgeInsets.all(24),
             child: Column(

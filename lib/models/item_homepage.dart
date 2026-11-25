@@ -1,6 +1,12 @@
 import 'package:material_ui/material_ui.dart';
 
-enum HomepageAction { feedback, addProject, addExperience }
+enum HomepageAction {
+  feedback,
+  viewProjects,
+  addProject,
+  addExperience,
+  logout,
+}
 
 /// Konfigurasi immutable setiap aksi; warna tidak bergantung pada percabangan UI.
 class ItemHomepage {

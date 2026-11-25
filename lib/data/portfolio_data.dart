@@ -13,6 +13,7 @@ abstract final class PortfolioData {
       icon: Icons.folder,
       color: Color(0xFF2457A7),
       description: 'Jelajahi karya dan perjalanan belajarku.',
+      action: HomepageAction.viewProjects,
     ),
     ItemHomepage(
       name: 'Tambah Proyek',
@@ -33,6 +34,7 @@ abstract final class PortfolioData {
       icon: Icons.logout,
       color: Color(0xFFB3452F),
       description: 'Sampai jumpa di kesempatan berikutnya.',
+      action: HomepageAction.logout,
     ),
   ];
 }

@@ -2,8 +2,12 @@ import 'package:material_ui/material_ui.dart';
 import 'package:myportofolio_mobile/screens/experience_form.dart';
 import 'package:myportofolio_mobile/screens/menu.dart';
 import 'package:myportofolio_mobile/screens/project_form.dart';
+import 'package:myportofolio_mobile/screens/project_list_screen.dart';
+import 'package:myportofolio_mobile/services/auth_state.dart';
+import 'package:myportofolio_mobile/widgets/auth_guard.dart';
+import 'package:provider/provider.dart';
 
-enum DrawerDestination { home, addProject, addExperience }
+enum DrawerDestination { home, projects, addProject, addExperience }
 
 /// Drawer mengganti route aktif; kartu Tambah Proyek memakai push secara terpisah.
 class LeftDrawer extends StatelessWidget {
@@ -30,9 +34,26 @@ class LeftDrawer extends StatelessWidget {
     );
   }
 
+  Future<void> _navigateProtected(
+    BuildContext context,
+    DrawerDestination target,
+    WidgetBuilder builder,
+  ) async {
+    final navigator = Navigator.of(context);
+    navigator.pop();
+    if (target == destination) return;
+
+    final loggedIn = await ensureLoggedIn(navigator.context);
+    if (!loggedIn || !navigator.mounted) return;
+    navigator.pushReplacement<void, void>(
+      MaterialPageRoute<void>(builder: builder),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final colors = Theme.of(context).colorScheme;
+    final isLoggedIn = context.watch<AuthState>().isLoggedIn;
 
     return Drawer(
       child: ListView(
@@ -74,10 +95,20 @@ class LeftDrawer extends StatelessWidget {
             ),
           ),
           ListTile(
+            leading: const Icon(Icons.folder_outlined),
+            title: const Text('Projects'),
+            selected: destination == DrawerDestination.projects,
+            onTap: () => _navigate(
+              context,
+              DrawerDestination.projects,
+              (context) => ProjectListScreen(onToggleTheme: onToggleTheme),
+            ),
+          ),
+          ListTile(
             leading: const Icon(Icons.add_circle_outline),
             title: const Text('Add Project'),
             selected: destination == DrawerDestination.addProject,
-            onTap: () => _navigate(
+            onTap: () => _navigateProtected(
               context,
               DrawerDestination.addProject,
               (context) => ProjectFormPage(onToggleTheme: onToggleTheme),
@@ -93,6 +124,34 @@ class LeftDrawer extends StatelessWidget {
               (context) => ExperienceFormPage(onToggleTheme: onToggleTheme),
             ),
           ),
+          const Divider(),
+          if (!isLoggedIn)
+            ListTile(
+              leading: const Icon(Icons.login),
+              title: const Text('Login'),
+              onTap: () async {
+                final navigator = Navigator.of(context);
+                navigator.pop();
+                await ensureLoggedIn(navigator.context);
+              },
+            )
+          else
+            ListTile(
+              leading: const Icon(Icons.logout),
+              title: const Text('Logout'),
+              onTap: () async {
+                final navigator = Navigator.of(context);
+                final messenger = ScaffoldMessenger.of(context);
+                final authState = context.read<AuthState>();
+                navigator.pop();
+                await authState.logout();
+                messenger
+                  ..clearSnackBars()
+                  ..showSnackBar(
+                    const SnackBar(content: Text('Logged out successfully.')),
+                  );
+              },
+            ),
         ],
       ),
     );
