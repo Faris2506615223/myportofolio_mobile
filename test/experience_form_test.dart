@@ -1,32 +1,62 @@
+import 'dart:convert';
+
 import 'package:flutter_test/flutter_test.dart';
+import 'package:http/http.dart' as http;
+import 'package:http/testing.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:myportofolio_mobile/app.dart';
 import 'package:myportofolio_mobile/models/experience.dart';
 import 'package:myportofolio_mobile/models/item_homepage.dart';
 import 'package:myportofolio_mobile/screens/experience_form.dart';
+import 'package:myportofolio_mobile/screens/login_screen.dart';
 import 'package:myportofolio_mobile/screens/menu.dart';
 import 'package:myportofolio_mobile/screens/project_form.dart';
+import 'package:myportofolio_mobile/services/api_client.dart';
+import 'package:myportofolio_mobile/services/auth_state.dart';
 import 'package:myportofolio_mobile/widgets/project_card.dart';
+import 'package:provider/provider.dart';
 
 void main() {
+  ApiClient fakeClient() => ApiClient(
+    client: MockClient((request) async {
+      if (request.url.path == '/api/v1/auth/token/') {
+        return http.Response(jsonEncode({'token': 'fake-token'}), 200);
+      }
+      if (request.url.path == '/api/v1/auth/logout/') {
+        return http.Response('', 204);
+      }
+      return http.Response('[]', 200);
+    }),
+  );
+
   Future<void> pumpForm(
     WidgetTester tester, {
     Size size = const Size(1000, 1000),
     double scale = 1,
+    String? initialToken,
   }) async {
     tester.view.devicePixelRatio = 1;
     tester.view.physicalSize = size;
     addTearDown(tester.view.resetPhysicalSize);
     addTearDown(tester.view.resetDevicePixelRatio);
+    final apiClient = fakeClient();
     await tester.pumpWidget(
-      MaterialApp(
-        builder: (context, child) => MediaQuery(
-          data: MediaQuery.of(
-            context,
-          ).copyWith(textScaler: TextScaler.linear(scale)),
-          child: child!,
+      MultiProvider(
+        providers: [
+          Provider<ApiClient>.value(value: apiClient),
+          ChangeNotifierProvider<AuthState>(
+            create: (_) => AuthState(apiClient, initialToken: initialToken),
+          ),
+        ],
+        child: MaterialApp(
+          builder: (context, child) => MediaQuery(
+            data: MediaQuery.of(
+              context,
+            ).copyWith(textScaler: TextScaler.linear(scale)),
+            child: child!,
+          ),
+          home: const ExperienceFormPage(),
         ),
-        home: const ExperienceFormPage(),
       ),
     );
     await tester.pumpAndSettle();
@@ -60,7 +90,7 @@ void main() {
   testWidgets(
     'Kartu baru membuka form melalui push dan Back mengembalikan menu',
     (tester) async {
-      await tester.pumpWidget(const MyApp());
+      await tester.pumpWidget(MyApp(apiClient: fakeClient()));
       await tester.pumpAndSettle();
       final home = tester.element(find.byType(MyHomePage));
       await press(tester, 'Tambah Pengalaman');
@@ -80,12 +110,17 @@ void main() {
   );
 
   testWidgets(
-    'Drawer membuka Experience, Home, dan Project tanpa kehilangan opsi lama',
+    'Drawer membuka Experience, Home, dan Project dengan guard login',
     (tester) async {
-      await tester.pumpWidget(const MyApp());
+      await tester.pumpWidget(MyApp(apiClient: fakeClient()));
       await tester.pumpAndSettle();
       await openDrawer(tester);
-      for (final label in ['Home', 'Add Project', 'Add Experience']) {
+      for (final label in [
+        'Home',
+        'Projects',
+        'Add Project',
+        'Add Experience',
+      ]) {
         expect(find.text(label), findsOneWidget);
       }
       await tester.tap(find.text('Add Experience'));
@@ -97,6 +132,17 @@ void main() {
       );
       await openDrawer(tester);
       await tester.tap(find.text('Add Project'));
+      await tester.pumpAndSettle();
+      expect(find.byType(LoginScreen), findsOneWidget);
+      await tester.enterText(
+        find.byKey(const ValueKey('login-username')),
+        'owner',
+      );
+      await tester.enterText(
+        find.byKey(const ValueKey('login-password')),
+        'pass123',
+      );
+      await tester.tap(find.widgetWithText(ElevatedButton, 'Login'));
       await tester.pumpAndSettle();
       expect(find.byType(ProjectFormPage), findsOneWidget);
       await openDrawer(tester);
@@ -114,7 +160,7 @@ void main() {
     (tester) async {
       tester.platformDispatcher.platformBrightnessTestValue = Brightness.light;
       addTearDown(tester.platformDispatcher.clearPlatformBrightnessTestValue);
-      await tester.pumpWidget(const MyApp());
+      await tester.pumpWidget(MyApp(apiClient: fakeClient()));
       await tester.pumpAndSettle();
       await openDrawer(tester);
       await tester.tap(find.text('Add Experience'));

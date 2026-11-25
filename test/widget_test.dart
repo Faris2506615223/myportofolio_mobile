@@ -1,21 +1,45 @@
-import 'package:material_ui/material_ui.dart';
+import 'dart:convert';
+
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:http/http.dart' as http;
+import 'package:http/testing.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:myportofolio_mobile/app.dart';
 import 'package:myportofolio_mobile/data/portfolio_data.dart';
 import 'package:myportofolio_mobile/screens/experience_form.dart';
+import 'package:myportofolio_mobile/screens/login_screen.dart';
 import 'package:myportofolio_mobile/screens/menu.dart';
 import 'package:myportofolio_mobile/screens/project_form.dart';
+import 'package:myportofolio_mobile/screens/project_list_screen.dart';
+import 'package:myportofolio_mobile/services/api_client.dart';
+import 'package:myportofolio_mobile/services/auth_state.dart';
 import 'package:myportofolio_mobile/widgets/info_card.dart';
 import 'package:myportofolio_mobile/widgets/project_card.dart';
+import 'package:provider/provider.dart';
 
 void main() {
+  ApiClient fakeApiClient() => ApiClient(
+    client: MockClient((request) async {
+      if (request.url.path == '/api/v1/projects/' && request.method == 'GET') {
+        return http.Response(jsonEncode([]), 200);
+      }
+      if (request.url.path == '/api/v1/auth/token/') {
+        return http.Response(jsonEncode({'token': 'test-token'}), 200);
+      }
+      if (request.url.path == '/api/v1/auth/logout/') {
+        return http.Response('', 204);
+      }
+      return http.Response('Not found', 404);
+    }),
+  );
+
   Future<void> pumpApp(WidgetTester tester) async {
     tester.view.devicePixelRatio = 1;
     tester.view.physicalSize = const Size(1280, 1100);
     addTearDown(tester.view.resetDevicePixelRatio);
     addTearDown(tester.view.resetPhysicalSize);
-    await tester.pumpWidget(const MyApp());
+    await tester.pumpWidget(MyApp(apiClient: fakeApiClient()));
     await tester.pumpAndSettle();
   }
 
@@ -58,46 +82,74 @@ void main() {
     expect(colors, hasLength(4));
   });
 
-  testWidgets('Keempat tombol menampilkan pesan SnackBar yang persis sesuai', (
-    tester,
-  ) async {
-    await pumpApp(tester);
+  testWidgets(
+    'Keempat tombol mengarahkan aksi dan melindungi Tambah Proyek dengan login',
+    (tester) async {
+      await pumpApp(tester);
 
-    for (final item in PortfolioData.items) {
-      await tester.ensureVisible(find.text(item.name));
-      await tester.tap(find.text(item.name));
+      // Lihat Proyek dapat diakses publik tanpa login
+      await tester.ensureVisible(find.text('Lihat Proyek'));
+      await tester.tap(find.text('Lihat Proyek'));
       await tester.pumpAndSettle();
-      expect(
-        find.text('Kamu telah menekan tombol ${item.name}!'),
-        findsOneWidget,
+      expect(find.byType(ProjectListScreen), findsOneWidget);
+      await tester.pageBack();
+      await tester.pumpAndSettle();
+
+      // Tambah Proyek mengarahkan ke LoginScreen saat belum login, lalu ke ProjectFormPage setelah login
+      await tester.ensureVisible(find.text('Tambah Proyek'));
+      await tester.tap(find.text('Tambah Proyek'));
+      await tester.pumpAndSettle();
+      expect(find.byType(LoginScreen), findsOneWidget);
+      await tester.enterText(
+        find.byKey(const ValueKey('login-username')),
+        'owner',
       );
-      expect(find.byType(SnackBar), findsOneWidget);
-      if (item.name == 'Tambah Proyek') {
-        expect(find.byType(ProjectFormPage), findsOneWidget);
-        await tester.pageBack();
-        await tester.pumpAndSettle();
-      }
-      if (item.name == 'Tambah Pengalaman') {
-        expect(find.byType(ExperienceFormPage), findsOneWidget);
-        await tester.pageBack();
-        await tester.pumpAndSettle();
-      }
-    }
-  });
+      await tester.enterText(
+        find.byKey(const ValueKey('login-password')),
+        'secret',
+      );
+      await tester.tap(find.widgetWithText(ElevatedButton, 'Login'));
+      await tester.pumpAndSettle();
+      expect(find.byType(ProjectFormPage), findsOneWidget);
+      await tester.pageBack();
+      await tester.pumpAndSettle();
+
+      // Tambah Pengalaman membuka ExperienceFormPage
+      await tester.ensureVisible(find.text('Tambah Pengalaman'));
+      await tester.tap(find.text('Tambah Pengalaman'));
+      await tester.pumpAndSettle();
+      expect(find.byType(ExperienceFormPage), findsOneWidget);
+      await tester.pageBack();
+      await tester.pumpAndSettle();
+
+      // Logout saat sudah login mencabut token dan menampilkan SnackBar
+      await tester.ensureVisible(find.text('Logout'));
+      await tester.tap(find.text('Logout'));
+      await tester.pumpAndSettle();
+      expect(find.text('Kamu telah berhasil logout!'), findsOneWidget);
+
+      // Logout lagi saat sudah logout memberi pesan belum login
+      await tester.tap(find.text('Logout'));
+      await tester.pumpAndSettle();
+      expect(find.text('Kamu belum login.'), findsOneWidget);
+    },
+  );
 
   testWidgets('Tap cepat mengganti pesan tanpa menyisakan antrean lama', (
     tester,
   ) async {
     await pumpApp(tester);
 
-    for (final name in ['Lihat Proyek', 'Logout', 'Lihat Proyek', 'Logout']) {
+    for (final name in ['Logout', 'Tambah Pengalaman']) {
       await tester.tap(find.text(name));
       await tester.pump(const Duration(milliseconds: 50));
     }
     await tester.pumpAndSettle();
-    expect(find.text('Kamu telah menekan tombol Logout!'), findsOneWidget);
-    expect(find.text('Kamu telah menekan tombol Lihat Proyek!'), findsNothing);
-    expect(find.text('Kamu telah menekan tombol Tambah Proyek!'), findsNothing);
+    expect(
+      find.text('Kamu telah menekan tombol Tambah Pengalaman!'),
+      findsOneWidget,
+    );
+    expect(find.text('Kamu belum login.'), findsNothing);
 
     await tester.pump(const Duration(seconds: 5));
     await tester.pumpAndSettle();
@@ -202,14 +254,14 @@ void main() {
       tester.view.physicalSize = size;
       addTearDown(tester.view.resetDevicePixelRatio);
       addTearDown(tester.view.resetPhysicalSize);
-      await tester.pumpWidget(const MyApp());
+      await tester.pumpWidget(MyApp(apiClient: fakeApiClient()));
       await tester.pumpAndSettle();
       expect(tester.takeException(), isNull);
 
       await tester.ensureVisible(find.text('Logout'));
       await tester.tap(find.text('Logout'));
       await tester.pumpAndSettle();
-      expect(find.text('Kamu telah menekan tombol Logout!'), findsOneWidget);
+      expect(find.text('Kamu belum login.'), findsOneWidget);
       expect(tester.takeException(), isNull);
     });
   }
@@ -219,15 +271,24 @@ void main() {
     tester.view.physicalSize = const Size(320, 568);
     addTearDown(tester.view.resetDevicePixelRatio);
     addTearDown(tester.view.resetPhysicalSize);
+    final apiClient = fakeApiClient();
     await tester.pumpWidget(
-      MaterialApp(
-        builder: (context, child) => MediaQuery(
-          data: MediaQuery.of(
-            context,
-          ).copyWith(textScaler: TextScaler.linear(2)),
-          child: child!,
+      MultiProvider(
+        providers: [
+          Provider<ApiClient>.value(value: apiClient),
+          ChangeNotifierProvider<AuthState>(
+            create: (_) => AuthState(apiClient),
+          ),
+        ],
+        child: MaterialApp(
+          builder: (context, child) => MediaQuery(
+            data: MediaQuery.of(
+              context,
+            ).copyWith(textScaler: const TextScaler.linear(2)),
+            child: child!,
+          ),
+          home: const MyHomePage(),
         ),
-        home: const MyHomePage(),
       ),
     );
     await tester.pumpAndSettle();
@@ -235,7 +296,7 @@ void main() {
     await tester.ensureVisible(find.text('Logout'));
     await tester.tap(find.text('Logout'));
     await tester.pumpAndSettle();
-    expect(find.text('Kamu telah menekan tombol Logout!'), findsOneWidget);
+    expect(find.text('Kamu belum login.'), findsOneWidget);
     expect(tester.takeException(), isNull);
   });
 }
